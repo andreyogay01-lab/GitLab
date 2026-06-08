@@ -34,12 +34,15 @@
 6.Выполнена команда sudo gitlab-runner run для запуска раннера.
 ```
 Поле для вставки кода...
-# Команда регистрации раннера 
-sudo gitlab-runner register --url [http://192.168.56.10/](http://192.168.56.10/) --registration-token <ТВОЙ_ТОКЕН> --executor shell
+код для регистрации раннера в ВМ
+name = "ubuntu-bionic"
+  url = "[http://192.168.56.10/](http://192.168.56.10/)"
+  token = <МОЙ_ТОКЕН>
+  executor = "shell"
 
 ![статус раннера](runner_status.png)`
 ![параметры раннера](runner_settings.png)
-![регистрация раннера в ВМ](runner_settings.png)
+![регистрация раннера в ВМ](runner_register.png)
 
 ---
 
