@@ -1,0 +1,8 @@
+﻿stages:
+  - test
+
+job_test:
+  stage: test
+  script:
+    - echo "Сборка успешно запущена!"
+    - uname -a
