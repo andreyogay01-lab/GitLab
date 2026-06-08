@@ -34,8 +34,9 @@
 6.Выполнена команда sudo gitlab-runner run для запуска раннера.
 ```
 Поле для вставки кода...
-# Команда регистрации раннера (пример):
-sudo gitlab-runner register --url http://192.168.56.10/ --registration-token <ТВОЙ_ТОКЕН> --executor docker --docker-image alpine:latest
+# Команда регистрации раннера 
+sudo gitlab-runner register --url [http://192.168.56.10/](http://192.168.56.10/) --registration-token <ТВОЙ_ТОКЕН> --executor shell
+
 ![статус раннера](runner_status.png)`
 ![параметры раннера](runner_settings.png)
 ![регистрация раннера в ВМ](runner_settings.png)
@@ -60,7 +61,7 @@ job_test:
   script:
     - echo "Сборка успешно запущена!"
     - uname -a!
-[Успешный статус (Passed)](pipeline-success.png)`
+![Успешный статус (Passed)](pipeline-success.png)`
 
 
 ---
