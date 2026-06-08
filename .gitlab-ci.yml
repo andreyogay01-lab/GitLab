@@ -1,8 +1,8 @@
-п»їstages:
+stages:
   - test
 
 job_test:
   stage: test
   script:
-    - echo "РЎР±РѕСЂРєР° СѓСЃРїРµС€РЅРѕ Р·Р°РїСѓС‰РµРЅР°!"
+    - echo 'Сборка успешно запущена!'
     - uname -a
