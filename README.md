@@ -1,4 +1,4 @@
-# Домашнее задание к занятию "`Система мониторинга Zabbix. Часть 2`" - `Огай Андрей`
+# Домашнее задание к занятию "`Кластеризация и балансировка нагрузки`" - `Огай Андрей`
 
 
 ### Инструкция по выполнению домашнего задания
@@ -22,28 +22,71 @@
 
 ---
 
-### Задание 1. Создание кастомного шаблона мониторинга
-* Создан пользовательский шаблон мониторинга.
-* Добавлены элементы данных для отслеживания утилизации процессора (`system.cpu.util`) и оперативной памяти (`vm.memory.size[pused]`) с указанием единиц измерения (`%`).
+### Задание 1. 
 
-* **Скриншот созданных элементов данных в шаблоне:**
-  ![Задание 1](img/Задание-1.png)
+haproxy
+global
+log /dev/log local0
+log /dev/log local1 notice
+chroot /var/lib/haproxy
+user haproxy
+group haproxy
+daemon
 
+defaults
+log global
+mode tcp
+timeout connect 5s
+timeout client 50s
+timeout server 50s
+
+frontend stats
+mode http
+bind *:8888
+stats enable
+stats uri /
+
+frontend fe_tcp
+bind *:80
+default_backend be_tcp
+
+backend be_tcp
+balance roundrobin
+server s1 127.0.0.1:8001 check
+server s2 127.0.0.1:8002 check
+
+### Скриншот работы
+![Результат Задания 1](задание-1.png)
 ---
 
-### Задание 2 и 3. Установка агента, добавление хостов и привязка шаблонов
-* На целевой системе установлен и запущен Zabbix agent.
-* В веб-интерфейсе Zabbix настроен хост `AndreyOgay` с корректным IP-адресом интерфейса.
-* К хосту привязаны стандартный шаблон ОС Linux и созданный кастомный шаблон мониторинга CPU/RAM. Статус хоста переведен в активный (зеленый индикатор доступности `Available: ZBX`).
+### Задание 2.
 
-* **Скриншот списка хостов со статусом Availability:**
-  ![Задание 2-3](img/Задание%202-3.jpeg)
+haproxy
+global
+log /dev/log local0
+log /dev/log local1 notice
+chroot /var/lib/haproxy
+user haproxy
+group haproxy
+daemon
 
----
+defaults
+log global
+mode http
+timeout connect 5s
+timeout client 50s
+timeout server 50s
 
-### Задание 4. Создание дашборда с графиками
-* Создана пользовательская панель мониторинга (**Custom Dashboard**).
-* Настроен и добавлен виджет графиков, отображающий метрики утилизации процессора и оперативной памяти для хоста `AndreyOgay`.
+frontend fe_http
+bind *:80
+acl is_example_local hdr(host) -i example.local
+use_backend be_http if is_example_local
 
-* **Скриншот итогового дашборда:**
-  ![Задание 4](img/Задание-4.jpeg)
+backend be_http
+balance roundrobin
+server s1 127.0.0.1:8001 weight 2 check
+server s2 127.0.0.1:8002 weight 3 check
+server s3 127.0.0.1:8003 weight 4 check
+
+### Скриншот работы
+![Результат Задания 2](задание-2.png)
