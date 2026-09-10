@@ -1,4 +1,4 @@
-# Домашнее задание к занятию "`Кластеризация и балансировка нагрузки`" - `Огай Андрей`
+# Домашнее задание к занятию "`Отказоустойчивость в облаке`" - `Огай Андрей`
 
 
 ### Инструкция по выполнению домашнего задания
@@ -23,70 +23,33 @@
 ---
 
 ### Задание 1. 
+В рамках данной работы с помощью Terraform была развернута отказоустойчивая инфраструктура в Yandex Cloud, состоящая из виртуальных машин с веб-сервером Nginx и сетевого балансировщика нагрузки (Network Load Balancer).
 
-haproxy
-global
-log /dev/log local0
-log /dev/log local1 notice
-chroot /var/lib/haproxy
-user haproxy
-group haproxy
-daemon
-
-defaults
-log global
-mode tcp
-timeout connect 5s
-timeout client 50s
-timeout server 50s
-
-frontend stats
-mode http
-bind *:8888
-stats enable
-stats uri /
-
-frontend fe_tcp
-bind *:80
-default_backend be_tcp
-
-backend be_tcp
-balance roundrobin
-server s1 127.0.0.1:8001 check
-server s2 127.0.0.1:8002 check
-
-### Скриншот работы
-![Результат Задания 1](задание-1.png)
 ---
 
-### Задание 2.
+## Структура проекта
 
-haproxy
-global
-log /dev/log local0
-log /dev/log local1 notice
-chroot /var/lib/haproxy
-user haproxy
-group haproxy
-daemon
+* `main.tf` — основной манифест Terraform, описывающий провайдер, сеть, виртуальные машины, целевую группу и сетевой балансировщик.
+* `README.md` — описание домашней работы и результаты выполнения.
 
-defaults
-log global
-mode http
-timeout connect 5s
-timeout client 50s
-timeout server 50s
+---
 
-frontend fe_http
-bind *:80
-acl is_example_local hdr(host) -i example.local
-use_backend be_http if is_example_local
+## Архитектура и описание ресурсов
 
-backend be_http
-balance roundrobin
-server s1 127.0.0.1:8001 weight 2 check
-server s2 127.0.0.1:8002 weight 3 check
-server s3 127.0.0.1:8003 weight 4 check
+В манифесте `main.tf` реализованы следующие ресурсы:
+1. **Сеть и подсеть (`yandex_vpc_network`, `yandex_vpc_subnet`)**: изолированная сеть `network-1` и подсеть `subnet-1` в зоне `ru-central1-a` (`192.168.10.0/24`).
+2. **Виртуальные машины (`yandex_compute_instance.web`)**: 2 ВМ (`web-vm-1` и `web-vm-2`) на базе Ubuntu 22.04 LTS. Установка и запуск `nginx` реализованы автоматически через `cloud-init` (`user-data`).
+3. **Целевая группа (`yandex_lb_target_group`)**: группа `web-target-group`, динамически объединяющая внутренние IP-адреса созданных ВМ.
+4. **Сетевой балансировщик (`yandex_lb_network_load_balancer`)**: балансировщик `web-lb` с HTTP-слушателем на порту 80 и проверкой состояния (Healthcheck) каждые 2 секунды.
 
-### Скриншот работы
-![Результат Задания 2](задание-2.png)
+---
+
+## Развертывание и проверка
+
+1. Инициализация и применение конфигурации:
+   ```bash
+   terraform init
+   terraform plan
+   terraform apply
+
+2. Все скриншоты находятся в папке "img"
